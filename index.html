@@ -1,19 +1,282 @@
-<!doctype html>
-<title>Site Maintenance</title>
-<style>
-    *{background-color: #333;}
-  body { text-align: center; padding: 150px; }
-  h1 { font-size: 50px; }
-  body { font: 20px "Courier", monospace; color: rgba(2, 253, 190, 0.705); }
-  article { display: block; text-align: left; width: 650px; margin: 0 auto;}
-  a { color: #dc8100; text-decoration: none; }
-  a:hover { color: #333; text-decoration: none; }
-</style>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Amy Kong</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script src="https://unpkg.com/typeit@8.2.0/dist/index.umd.js"></script>
+	</head>
+	<body class="is-preload landing">
+		<div id="page-wrapper">
+			<!-- Header -->
+				<header id="header">
+					<nav id="nav">
+						<ul>
+							<li><a href="#about">About Me</a></li>
+							<li><a href="#projects">Projects</a></li>
+							<!-- <li><a href="#experience">Experience</a></li> -->
+							<li><a href="./resume.pdf" target="_blank" class="button primary">Resume</a></li>
+						</ul>
+					</nav>
+				</header>
 
-<article>
-    <h1>Currently under construction</h1>
-    <article>
-        <p>Will be back soon!</p>
-    </article>
+			<!-- Banner -->
+				<section id="banner">
+					<div class="content">
+						<div id="animation"></div>
+						<script id="vertexShader" type="x-shader/x-vertex">
+											precision mediump float;
+											precision mediump int;
+										
+											uniform mat4 modelViewMatrix; // optional
+											uniform mat4 projectionMatrix; // optional
+										
+											attribute vec3 position;
+											attribute vec4 color;
+										
+											varying vec3 vPosition;
+											varying vec4 vColor;
+										
+											void main()	{
+												vPosition = position;
+												vColor = color;
+										
+												gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+											}
+						</script>
+				
+						<script id="fragmentShader" type="x-shader/x-fragment">
+											precision mediump float;
+											precision mediump int;
+										
+											uniform float time;
+										
+											varying vec3 vPosition;
+											varying vec4 vColor;
+										
+											void main()	{
+												vec4 color = vec4( vColor );
+												color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
+										
+												gl_FragColor = color;
+											}
+						</script>
+				
+						<script type="module">
+							import * as THREE from './assets/build/three.module.js';
 
-</article>
+							let container;
+
+							let camera, scene, renderer;
+
+							let windowWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+							let windowHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+							console.log(windowWidth, windowHeight);
+
+							init();
+							animate();
+
+							function init() {
+								container = document.getElementById('animation');
+
+								camera = new THREE.PerspectiveCamera(30, (window.innerWidth) / (window.innerHeight), 1, 10);
+								console.log(camera.getFilmWidth(), camera.getFilmHeight());
+								camera.position.z = 2;
+
+								scene = new THREE.Scene();
+								// scene.background = new THREE.Color(0x1c1d26);
+
+								// geometry
+								// nr of triangles with 3 vertices per triangle
+								const vertexCount = 200 * 3;
+
+								const geometry = new THREE.BufferGeometry();
+
+								const positions = [];
+								const colors = [];
+
+								for (let i = 0; i < vertexCount; i++) {
+									// adding x,y,z
+									positions.push(Math.random() - 0.5);
+									positions.push(Math.random() - 0.5);
+									positions.push(Math.random() - 0.5);
+
+									// adding r,g,b,a
+									colors.push(Math.random() * 255);
+									colors.push(Math.random() * 255);
+									colors.push(Math.random() * 255);
+									colors.push(Math.random() * 255);
+								}
+
+								const positionAttribute = new THREE.Float32BufferAttribute(positions, 3);
+								const colorAttribute = new THREE.Uint8BufferAttribute(colors, 4);
+
+								colorAttribute.normalized = true; // this will map the buffer values to 0.0f - +1.0f in the shader
+
+								geometry.setAttribute('position', positionAttribute);
+								geometry.setAttribute('color', colorAttribute);
+
+								// material
+
+								const material = new THREE.RawShaderMaterial({
+
+									uniforms: {
+										time: { value: 1.0 }
+									},
+									vertexShader: document.getElementById('vertexShader').textContent,
+									fragmentShader: document.getElementById('fragmentShader').textContent,
+									side: THREE.DoubleSide,
+									transparent: true
+								});
+
+								const mesh = new THREE.Mesh(geometry, material);
+								scene.add(mesh);
+
+								renderer = new THREE.WebGLRenderer( { alpha: true } );
+								renderer.setClearColor( 0x000000, 0 ); // the default
+								renderer.setPixelRatio(window.devicePixelRatio);
+								container.appendChild(renderer.domElement);
+
+								window.addEventListener('resize', onWindowResize);
+							}
+
+							function onWindowResize() {
+								camera.aspect = window.innerWidth / window.innerHeight;
+								camera.updateProjectionMatrix();
+
+								renderer.setSize((window.innerWidth * 0.95), (window.innerHeight));
+							}
+
+							function animate() {
+								requestAnimationFrame(animate);
+								render();
+							}
+
+							function render() {
+								const time = performance.now();
+
+								const object = scene.children[0];
+
+								object.rotation.x = time * 0.00005;
+								object.rotation.y = time * 0.0002;
+								object.material.uniforms.time.value = time * 0.002;
+
+								renderer.setSize((window.innerWidth * 0.95), (window.innerHeight ));
+								renderer.render(scene, camera);
+							}
+						</script>
+						<header>
+							<h2 id="greeting"></h2>
+							<p>i'm amy.</p>
+							<hr>
+							<p>passionate about ux/ui, usability, and functionality</p>
+						</header>
+					</div>
+					<!-- <a href="#about" class="goto-next scrolly">Next</a> -->
+				</section>
+
+			<!-- About -->
+				<section id="about" class="spotlight style1 bottom">
+					<div class="content">
+						<div class="container">
+							<header>
+								<h2>About Me</h2>
+								<p>I study computer science, mathematics, and data science.</p>
+							</header>
+							<article>
+								<p>My passions and interests lie in UX/UI, front-end and full-stack development, and data visualization.</p>
+								<p>Besides school, I'm found doing other things I love (and keep me going) like: working as a lifeguard and teaching swimming
+									lessons, coaching competitive swimming, or at the gym.</p>
+							</article>
+						</div>
+					</div>
+					<!-- <a href="#projects" class="goto-next scrolly">Next</a> -->
+				</section>
+
+			<!-- Projects -->
+				<section id="projects" class="wrapper style1 special fade-up">
+					<div class="container">
+						<header class="major">
+							<h2>Projects</h2>
+							<p>Completed and In Progress</p>
+						</header>
+						
+						<div class="box alt">
+							<div class="row gtr-uniform">
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<h5>Bullet Journal Inspired To-Do List</h5>
+									<h6>Java</h6>
+									<p></p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<h5>Pomodoro Clock</h5>
+									<h6>JavaScript</h6>
+									<p></p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<h5>Transit Database</h5>
+									<h6>Oracle, PHP, mySQL, JavaScript</h6>
+									<p></p>
+								</section>
+							</div>
+						</div>
+						<footer class="major">
+							<ul class="actions special">
+								<li><a href="https://github.com/a-kong" class="icon"><img src="images/github.png" alt="" width="40" height="40" /></a></li>
+							</ul>
+						</footer>
+					</div>
+					<!-- <a href="#experience" class="goto-next scrolly">Next</a> -->
+				</section>
+
+			<!-- Experience -->
+				<!-- <section id="experience" class="spotlight style1 left">
+					<div class="container">
+						<header class="major">
+							<h2>Work Experience</h2>
+						</header>
+						<div class="box alt">
+							<div class="row gtr-uniform">
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<h4>Lifeguard and Instructor</h4>
+									<h5>City of Vancouver</h5>
+									<p></p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<h4>Assisant and Substitute Coach</h4>
+									<h5>Gators Swim Club</h5>
+									<p></p>
+								</section>
+							</div>
+						</div>
+					</div>
+				</section> -->
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="https://www.linkedin.com/in/amykong-/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="mailto: 88aykg@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; 2022</li><li>created by amy.</li>
+					</ul>
+				</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/text_animation.js"></script>
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

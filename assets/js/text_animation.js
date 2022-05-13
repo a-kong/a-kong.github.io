@@ -3,5 +3,8 @@ new TypeIt("#greeting", {
     speed: 250,
     loop: false,
     startDelay: 1100,
-    waitUntilVisible: true
+    waitUntilVisible: true,
+    afterComplete: function (instance) {
+      instance.destroy();
+    }
   }).go();

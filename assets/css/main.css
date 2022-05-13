@@ -3313,14 +3313,14 @@ input, select, textarea {
 				display: inline-block;
 				vertical-align: middle;
 				top: 40%;
-				left: 35%;
+				left: 45%;
 				z-index: 23;
 			}
 
 				#banner .content header h2 {
 					font-size: 2.5em;
-					margin: 0;
 					z-index: 23;
+					left: 50%
 				}
 
 				#banner .content header p {

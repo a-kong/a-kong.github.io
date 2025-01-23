@@ -62,7 +62,6 @@
 
 							let windowWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 							let windowHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-							console.log(windowWidth, windowHeight);
 
 							init();
 							animate();
@@ -71,7 +70,6 @@
 								container = document.getElementById('animation');
 
 								camera = new THREE.PerspectiveCamera(30, (window.innerWidth) / (window.innerHeight), 1, 10);
-								console.log(camera.getFilmWidth(), camera.getFilmHeight());
 								camera.position.z = 2;
 
 								scene = new THREE.Scene();
